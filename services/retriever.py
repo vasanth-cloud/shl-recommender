@@ -38,7 +38,11 @@ ALIASES = {
 }
 
 ROLE_HINTS = {
+    "senior leadership": ["opq", "leadership", "ucf", "personality"],
+    "leadership benchmark": ["opq", "leadership", "ucf", "personality"],
     "java developer": ["java", "core java", "java 8", "java frameworks", "sql"],
+    "full-stack engineer": ["java", "spring", "sql", "aws", "docker", "angular"],
+    "full stack engineer": ["java", "spring", "sql", "aws", "docker", "angular"],
     "python developer": ["python", "sql", "programming", "automata"],
     "python backend": ["python", "sql", "programming", "automata"],
     "backend developer": ["programming", "sql", "python"],
@@ -50,10 +54,164 @@ ROLE_HINTS = {
     "data scientist": ["python", "sql", "data science", "automata", "numerical"],
     "sales": ["sales", "service", "opq", "communication"],
     "customer service": ["customer service", "contact center", "phone simulation"],
+    "contact centre": ["contact center", "customer service", "phone simulation", "svar"],
+    "contact center": ["contact center", "customer service", "phone simulation", "svar"],
+    "financial analyst": ["finance", "financial", "accounting", "statistics", "numerical"],
+    "healthcare admin": ["hipaa", "medical", "word", "dependability", "opq"],
+    "plant operator": ["safety", "dependability", "workplace health"],
+    "plant operators": ["safety", "dependability", "workplace health"],
+    "admin assistant": ["excel", "word", "opq"],
+    "admin assistants": ["excel", "word", "opq"],
+    "management trainee": ["verify", "graduate scenarios", "opq"],
+    "graduate management": ["verify", "graduate scenarios", "opq"],
     "manager": ["leadership", "management", "opq", "personality"],
 }
 
 PRIORITY_ITEMS = {
+    "senior leadership": [
+        "Occupational Personality Questionnaire OPQ32r",
+        "OPQ Universal Competency Report 2.0",
+        "OPQ Leadership Report",
+    ],
+    "leadership benchmark": [
+        "Occupational Personality Questionnaire OPQ32r",
+        "OPQ Universal Competency Report 2.0",
+        "OPQ Leadership Report",
+    ],
+    "rust": [
+        "Smart Interview Live Coding",
+        "Linux Programming (General)",
+        "Networking and Implementation (New)",
+        "SHL Verify Interactive G+",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "high-performance networking": [
+        "Smart Interview Live Coding",
+        "Linux Programming (General)",
+        "Networking and Implementation (New)",
+        "SHL Verify Interactive G+",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "contact centre": [
+        "SVAR Spoken English (US) (New)",
+        "Contact Center Call Simulation (New)",
+        "Entry Level Customer Serv-Retail & Contact Center",
+        "Customer Service Phone Simulation",
+    ],
+    "contact center": [
+        "SVAR Spoken English (US) (New)",
+        "Contact Center Call Simulation (New)",
+        "Entry Level Customer Serv-Retail & Contact Center",
+        "Customer Service Phone Simulation",
+    ],
+    "financial analyst": [
+        "SHL Verify Interactive – Numerical Reasoning",
+        "Financial Accounting (New)",
+        "Basic Statistics (New)",
+        "Graduate Scenarios",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "finance": [
+        "SHL Verify Interactive – Numerical Reasoning",
+        "Financial Accounting (New)",
+        "Basic Statistics (New)",
+        "Graduate Scenarios",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "re-skill": [
+        "Global Skills Assessment",
+        "Global Skills Development Report",
+        "Occupational Personality Questionnaire OPQ32r",
+        "OPQ MQ Sales Report",
+        "Sales Transformation 2.0 - Individual Contributor",
+    ],
+    "reskill": [
+        "Global Skills Assessment",
+        "Global Skills Development Report",
+        "Occupational Personality Questionnaire OPQ32r",
+        "OPQ MQ Sales Report",
+        "Sales Transformation 2.0 - Individual Contributor",
+    ],
+    "talent audit": [
+        "Global Skills Assessment",
+        "Global Skills Development Report",
+        "Occupational Personality Questionnaire OPQ32r",
+        "OPQ MQ Sales Report",
+        "Sales Transformation 2.0 - Individual Contributor",
+    ],
+    "plant operator": [
+        "Dependability and Safety Instrument (DSI)",
+        "Manufac. & Indust. - Safety & Dependability 8.0",
+        "Workplace Health and Safety (New)",
+    ],
+    "plant operators": [
+        "Dependability and Safety Instrument (DSI)",
+        "Manufac. & Indust. - Safety & Dependability 8.0",
+        "Workplace Health and Safety (New)",
+    ],
+    "chemical facility": [
+        "Dependability and Safety Instrument (DSI)",
+        "Manufac. & Indust. - Safety & Dependability 8.0",
+        "Workplace Health and Safety (New)",
+    ],
+    "healthcare admin": [
+        "HIPAA (Security)",
+        "Medical Terminology (New)",
+        "Microsoft Word 365 - Essentials (New)",
+        "Dependability and Safety Instrument (DSI)",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "patient records": [
+        "HIPAA (Security)",
+        "Medical Terminology (New)",
+        "Microsoft Word 365 - Essentials (New)",
+        "Dependability and Safety Instrument (DSI)",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "admin assistant": [
+        "MS Excel (New)",
+        "MS Word (New)",
+        "Microsoft Excel 365 (New)",
+        "Microsoft Word 365 (New)",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "admin assistants": [
+        "MS Excel (New)",
+        "MS Word (New)",
+        "Microsoft Excel 365 (New)",
+        "Microsoft Word 365 (New)",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "full-stack engineer": [
+        "Core Java (Advanced Level) (New)",
+        "Spring (New)",
+        "RESTful Web Services (New)",
+        "SQL (New)",
+        "Amazon Web Services (AWS) Development (New)",
+        "Docker (New)",
+        "SHL Verify Interactive G+",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "full stack engineer": [
+        "Core Java (Advanced Level) (New)",
+        "Spring (New)",
+        "RESTful Web Services (New)",
+        "SQL (New)",
+        "Amazon Web Services (AWS) Development (New)",
+        "Docker (New)",
+        "SHL Verify Interactive G+",
+        "Occupational Personality Questionnaire OPQ32r",
+    ],
+    "management trainee": [
+        "SHL Verify Interactive G+",
+        "Occupational Personality Questionnaire OPQ32r",
+        "Graduate Scenarios",
+    ],
+    "graduate management": [
+        "SHL Verify Interactive G+",
+        "Occupational Personality Questionnaire OPQ32r",
+        "Graduate Scenarios",
+    ],
     "data analyst": [
         "Python (New)",
         "SQL (New)",
@@ -174,19 +332,15 @@ def item_text(item):
 def is_recommendable(item):
     name = item["name"].lower()
     url = item["url"].lower()
-    non_assessment_words = [
-        " report", "candidate report", "interview guide", "profiler cards",
-        "solution", "development center", "360", " profile"
+    blocked_catalog_words = [
+        "interview guide", "profiler cards", "development center", "360"
     ]
 
     if not item["url"].startswith("https://www.shl.com/products/product-catalog/view/"):
         return False
 
-    if any(word in name or word.replace(" ", "-") in url for word in non_assessment_words):
-        return name in {
-            "global skills assessment",
-            "occupational personality questionnaire opq32r",
-        }
+    if any(word in name or word.replace(" ", "-") in url for word in blocked_catalog_words):
+        return False
 
     return True
 

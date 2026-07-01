@@ -1,8 +1,14 @@
 OFF_TOPIC_WORDS = [
     "salary", "compensation", "legal", "law", "visa", "resume",
     "interview tips", "hiring advice", "write a job description",
-    "contract", "hipaa", "prompt injection", "ignore previous",
+    "contract", "prompt injection", "ignore previous",
     "system prompt", "jailbreak"
+]
+
+LEGAL_ADVICE_WORDS = [
+    "legally required", "legal requirement", "required under hipaa",
+    "satisfy that requirement", "satisfies that requirement",
+    "regulatory obligation", "compliance obligation"
 ]
 
 COMPARE_WORDS = [
@@ -11,7 +17,8 @@ COMPARE_WORDS = [
 
 CONFIRM_WORDS = [
     "perfect", "thanks", "thank you", "confirmed", "that works",
-    "looks good", "that's good", "ok", "okay"
+    "looks good", "that's good", "ok", "okay", "final list",
+    "locking it in", "lock it in", "covers it", "clear."
 ]
 
 REFINE_WORDS = [
@@ -25,7 +32,10 @@ HIRING_KEYWORDS = [
     "sales", "support", "service", "skills", "java", "spring", "sql",
     "python", "frontend", "backend", "graduate", "senior", "mid-level",
     "entry-level", "personality", "cognitive", "aptitude", "reasoning",
-    "opq", "gsa", "verify", "excel"
+    "opq", "gsa", "verify", "excel", "solution", "leadership",
+    "reskill", "re-skill", "talent audit", "contact centre",
+    "contact center", "healthcare", "hipaa", "admin", "safety",
+    "finance", "financial", "rust", "full-stack", "full stack"
 ]
 
 CONTEXT_KEYWORDS = [
@@ -33,7 +43,9 @@ CONTEXT_KEYWORDS = [
     "service", "java", "python", "sql", "excel", "frontend", "backend",
     "spring", "react", "angular", "aws", "graduate", "entry", "senior",
     "mid-level", "mid level", "stakeholder", "communication", "personality",
-    "cognitive", "aptitude", "reasoning", "leadership"
+    "cognitive", "aptitude", "reasoning", "leadership", "solution",
+    "contact centre", "contact center", "healthcare", "safety",
+    "finance", "financial", "reskill", "re-skill", "talent audit"
 ]
 
 
@@ -90,6 +102,9 @@ def detect_intent(messages):
     all_user = user_text(messages).lower()
 
     if any(word in latest for word in OFF_TOPIC_WORDS):
+        return "refuse"
+
+    if any(word in latest for word in LEGAL_ADVICE_WORDS):
         return "refuse"
 
     if any(word in latest for word in COMPARE_WORDS):

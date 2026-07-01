@@ -111,10 +111,37 @@ def enforce_role_constraints(query, items):
     return filtered or items
 
 
+def enforce_exclusions(query, items):
+    lowered = query.lower()
+    blocked_name_terms = []
+
+    if re.search(r"\b(drop|remove|exclude|without)\s+(the\s+)?(opq|opq32r|personality)\b", lowered):
+        blocked_name_terms.extend(["opq", "occupational personality"])
+    if re.search(r"\b(drop|remove|exclude|without)\s+(the\s+)?rest\b", lowered):
+        blocked_name_terms.append("rest")
+    if re.search(r"\b(drop|remove|exclude|without)\s+(the\s+)?verify\b", lowered):
+        blocked_name_terms.append("verify")
+    if re.search(r"\b(drop|remove|exclude|without)\s+(the\s+)?g\+\b", lowered):
+        blocked_name_terms.append("g+")
+
+    if not blocked_name_terms:
+        return items
+
+    filtered = [
+        item for item in items
+        if not any(term in item["name"].lower() for term in blocked_name_terms)
+    ]
+
+    return filtered or items
+
+
 def apply_hard_constraints(query, items):
-    return enforce_role_constraints(
+    return enforce_exclusions(
         query,
-        enforce_language_constraints(query, items)
+        enforce_role_constraints(
+            query,
+            enforce_language_constraints(query, items)
+        )
     )
 
 
