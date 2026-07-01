@@ -39,12 +39,62 @@ ALIASES = {
 
 ROLE_HINTS = {
     "java developer": ["java", "core java", "java 8", "java frameworks", "sql"],
-    "python developer": ["python", "sql", "programming"],
+    "python developer": ["python", "sql", "programming", "automata"],
     "frontend developer": ["javascript", "html", "css", "react", "angular"],
-    "data analyst": ["sql", "excel", "data", "numerical", "python"],
-    "sales": ["sales", "service", "opq"],
+    "data analyst": ["python", "sql", "excel", "data science", "numerical"],
+    "data scientist": ["python", "sql", "data science", "automata", "numerical"],
+    "sales": ["sales", "service", "opq", "communication"],
     "customer service": ["customer service", "contact center", "phone simulation"],
     "manager": ["leadership", "management", "opq", "personality"],
+}
+
+PRIORITY_ITEMS = {
+    "data analyst": [
+        "Python (New)",
+        "SQL (New)",
+        "Automata - SQL (New)",
+        "MS Excel (New)",
+        "Microsoft Excel 365 - Essentials (New)",
+        "Microsoft Excel 365",
+        "Data Science (New)",
+        "Automata Data Science (New)",
+        "Verify - Numerical Ability",
+    ],
+    "data scientist": [
+        "Data Science (New)",
+        "Automata Data Science (New)",
+        "Automata Data Science Pro (New)",
+        "Python (New)",
+        "SQL (New)",
+        "Verify - Numerical Ability",
+    ],
+    "python developer": [
+        "Python (New)",
+        "Programming Concepts",
+        "SQL (New)",
+        "Automata - SQL (New)",
+    ],
+    "frontend developer": [
+        "HTML/CSS (New)",
+        "JavaScript (New)",
+        "ReactJS (New)",
+        "Automata Front End",
+        "CSS3 (New)",
+        "HTML5 (New)",
+    ],
+    "customer service": [
+        "Customer Service Phone Simulation",
+        "Contact Center Call Simulation (New)",
+        "WriteX - Email Writing (Customer Service) (New)",
+        "Retail Sales and Service Simulation",
+    ],
+    "sales": [
+        "Occupational Personality Questionnaire OPQ32r",
+        "Sales & Service Phone Simulation",
+        "Retail Sales and Service Simulation",
+        "WriteX - Email Writing (Sales) (New)",
+        "Global Skills Assessment",
+    ],
 }
 
 
@@ -98,10 +148,64 @@ def is_recommendable(item):
     return True
 
 
-def score_item(item, terms):
+def priority_score(item, lowered_query):
+    score = 0.0
+
+    for trigger, names in PRIORITY_ITEMS.items():
+        if trigger in lowered_query:
+            for index, name in enumerate(names):
+                if item["name"] == name:
+                    score += 200 - (index * 8)
+
+    explicit_skills = [
+        "python", "sql", "excel", "react", "javascript", "html", "css",
+        "java", "spring", "aws", "angular"
+    ]
+    for skill in explicit_skills:
+        if re.search(rf"\b{re.escape(skill)}\b", lowered_query) and skill in item["name"].lower():
+            score += 45
+
+    return score
+
+
+def penalty_score(item, lowered_query):
+    name = item["name"].lower()
+    penalty = 0.0
+
+    if "data analyst" in lowered_query and name.startswith("data entry") and "data entry" not in lowered_query:
+        penalty -= 55
+    if "sales" in lowered_query and "salesforce" in name and "salesforce" not in lowered_query:
+        penalty -= 60
+    if "frontend" in lowered_query and ("asp.net" in name or "informatica" in name):
+        penalty -= 35
+    if "python" in lowered_query and name.startswith("data entry"):
+        penalty -= 35
+    if "customer service" in lowered_query or "contact center" in lowered_query:
+        allowed = [
+            "customer", "contact", "phone", "retail", "writex", "email",
+            "sales & service"
+        ]
+        if not any(word in name for word in allowed):
+            penalty -= 80
+        if "web services" in name or "aws" in name:
+            penalty -= 120
+    if re.search(r"\bsales\b", lowered_query) and "salesforce" not in lowered_query:
+        allowed = [
+            "sales", "retail", "service", "opq", "occupational personality",
+            "global skills", "writex"
+        ]
+        if not any(word in name for word in allowed):
+            penalty -= 80
+        if name.startswith("sap ") or "telecommunications" in name:
+            penalty -= 80
+
+    return penalty
+
+
+def score_item(item, terms, lowered_query):
     text = item_text(item)
     name = item["name"].lower()
-    score = 0.0
+    score = priority_score(item, lowered_query) + penalty_score(item, lowered_query)
 
     for term, weight in terms.items():
         if term in name:
@@ -132,12 +236,13 @@ def score_item(item, terms):
 
 def search_catalog(query: str, top_k: int = 10, recommendable_only: bool = True):
     terms = expanded_terms(query)
+    lowered_query = query.lower()
     ranked = []
 
     for item in catalog:
         if recommendable_only and not is_recommendable(item):
             continue
-        score = score_item(item, terms)
+        score = score_item(item, terms, lowered_query)
         if score > 0:
             ranked.append((item, score))
 
