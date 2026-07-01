@@ -284,6 +284,7 @@ PRIORITY_ITEMS = {
         "HTML5 (New)",
     ],
     "customer service": [
+        "SVAR Spoken English (US) (New)",
         "Customer Service Phone Simulation",
         "Contact Center Call Simulation (New)",
         "WriteX - Email Writing (Customer Service) (New)",
@@ -352,7 +353,7 @@ def priority_score(item, lowered_query):
         if trigger in lowered_query:
             for index, name in enumerate(names):
                 if item["name"] == name:
-                    score += 200 - (index * 8)
+                    score += 1000 - (index * 25)
 
     explicit_skills = [
         "python", "sql", "excel", "react", "javascript", "html", "css",
@@ -367,6 +368,12 @@ def priority_score(item, lowered_query):
             score += 55
     if "fastapi" in lowered_query and item["name"] in {"Python (New)", "Programming Concepts"}:
         score += 55
+    if (
+        item["name"] == "SVAR Spoken English (US) (New)"
+        and any(term in lowered_query for term in ["contact centre", "contact center", "customer service"])
+        and re.search(r"\b(us|usa|english us|english usa|english \(usa\))\b", lowered_query)
+    ):
+        score += 1500
 
     return score
 

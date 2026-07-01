@@ -1,5 +1,27 @@
 [
   {
+    "id": "svar-spoken-english-us-new",
+    "name": "SVAR Spoken English (US) (New)",
+    "url": "https://www.shl.com/products/product-catalog/view/svar-spoken-english-us-new/",
+    "description": "Spoken English assessment for contact center and customer-facing roles using English (USA). It measures spoken language capability for high-volume screening.",
+    "keys": [
+      "Simulations"
+    ],
+    "test_type": "K",
+    "job_levels": [
+      "Entry-Level",
+      "Graduate",
+      "General Population"
+    ],
+    "languages": [
+      "English (USA)"
+    ],
+    "duration_raw": "",
+    "duration_minutes": null,
+    "adaptive": false,
+    "remote": true
+  },
+  {
     "id": "4302",
     "name": "Global Skills Development Report",
     "url": "https://www.shl.com/products/product-catalog/view/global-skills-development-report/",
