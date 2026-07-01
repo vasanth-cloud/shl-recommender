@@ -16,7 +16,7 @@ STOPWORDS = {
 }
 
 ALIASES = {
-    "backend": ["api", "server", "java", "python", "sql"],
+    "backend": ["api", "server", "python", "sql", "programming"],
     "front end": ["frontend", "html", "css", "javascript", "react", "angular"],
     "frontend": ["html", "css", "javascript", "react", "angular"],
     "full stack": ["java", "python", "javascript", "react", "angular", "sql"],
@@ -40,6 +40,11 @@ ALIASES = {
 ROLE_HINTS = {
     "java developer": ["java", "core java", "java 8", "java frameworks", "sql"],
     "python developer": ["python", "sql", "programming", "automata"],
+    "python backend": ["python", "sql", "programming", "automata"],
+    "backend developer": ["programming", "sql", "python"],
+    "software engineer": ["programming", "software", "agile", "sql"],
+    "software engineering": ["programming", "software", "agile", "sql"],
+    "software developer": ["programming", "software", "agile", "sql"],
     "frontend developer": ["javascript", "html", "css", "react", "angular"],
     "data analyst": ["python", "sql", "excel", "data science", "numerical"],
     "data scientist": ["python", "sql", "data science", "automata", "numerical"],
@@ -73,6 +78,44 @@ PRIORITY_ITEMS = {
         "Programming Concepts",
         "SQL (New)",
         "Automata - SQL (New)",
+    ],
+    "python backend": [
+        "Python (New)",
+        "SQL (New)",
+        "Programming Concepts",
+        "Automata - SQL (New)",
+        "SQL Server (New)",
+        "Microsoft SQL Server 2014 Programming",
+    ],
+    "backend developer": [
+        "Programming Concepts",
+        "SQL (New)",
+        "Python (New)",
+        "Automata - SQL (New)",
+        "SQL Server (New)",
+    ],
+    "software engineer": [
+        "Programming Concepts",
+        "Agile Software Development",
+        "SQL (New)",
+        "Automata - SQL (New)",
+        "Verify - Deductive Reasoning",
+        "Verify - Numerical Ability",
+    ],
+    "software engineering": [
+        "Programming Concepts",
+        "Agile Software Development",
+        "SQL (New)",
+        "Automata - SQL (New)",
+        "Verify - Deductive Reasoning",
+        "Verify - Numerical Ability",
+    ],
+    "software developer": [
+        "Programming Concepts",
+        "Agile Software Development",
+        "SQL (New)",
+        "Automata - SQL (New)",
+        "Python (New)",
     ],
     "frontend developer": [
         "HTML/CSS (New)",
@@ -159,11 +202,17 @@ def priority_score(item, lowered_query):
 
     explicit_skills = [
         "python", "sql", "excel", "react", "javascript", "html", "css",
-        "java", "spring", "aws", "angular"
+        "java", "spring", "aws", "angular", "postgresql", "postgres"
     ]
     for skill in explicit_skills:
         if re.search(rf"\b{re.escape(skill)}\b", lowered_query) and skill in item["name"].lower():
             score += 45
+
+    if re.search(r"\b(postgresql|postgres)\b", lowered_query):
+        if item["name"] in {"SQL (New)", "SQL Server (New)", "Automata - SQL (New)", "Programming Concepts"}:
+            score += 55
+    if "fastapi" in lowered_query and item["name"] in {"Python (New)", "Programming Concepts"}:
+        score += 55
 
     return score
 
@@ -180,6 +229,18 @@ def penalty_score(item, lowered_query):
         penalty -= 35
     if "python" in lowered_query and name.startswith("data entry"):
         penalty -= 35
+    if "python" in lowered_query and "java" in name:
+        penalty -= 120
+    if re.search(r"\b(postgresql|postgres|fastapi)\b", lowered_query) and "java" in name:
+        penalty -= 120
+    if (
+        "software engineer" in lowered_query
+        or "software engineering" in lowered_query
+        or "software developer" in lowered_query
+    ):
+        noisy = ["java", "excel", "customer", "sales", "call", "account", "photoshop"]
+        if any(word in name for word in noisy) and name != "agile software development":
+            penalty -= 60
     if "customer service" in lowered_query or "contact center" in lowered_query:
         allowed = [
             "customer", "contact", "phone", "retail", "writex", "email",

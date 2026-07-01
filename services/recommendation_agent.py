@@ -1,4 +1,5 @@
 from services.intent_router import user_text
+from services.llm_ranker import rerank_with_llm
 from services.retriever import catalog, is_recommendable, search_catalog
 
 
@@ -40,10 +41,22 @@ def fallback_items():
 
 def build_recommendations(messages):
     query = user_text(messages)
-    results = search_catalog(query, top_k=10, recommendable_only=True)
+    results = search_catalog(query, top_k=50, recommendable_only=True)
 
     if not results:
         results = fallback_items()
+
+    try:
+        llm_result = rerank_with_llm(query, results)
+    except Exception:
+        llm_result = None
+    if llm_result:
+        recommendations = format_recommendations(llm_result["items"])
+        return {
+            "reply": llm_result["reply"],
+            "recommendations": recommendations,
+            "end_of_conversation": False
+        }
 
     recommendations = format_recommendations(results)
 
