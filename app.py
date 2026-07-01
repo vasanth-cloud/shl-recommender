@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from models.schemas import ChatRequest
+from models.schemas import ChatRequest, ChatResponse
 from services.intent_router import detect_intent
 from services.recommendation_agent import (
     build_recommendations,
@@ -18,7 +18,7 @@ def health():
     return {"status": "ok"}
 
 
-@app.post("/chat")
+@app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest):
     intent = detect_intent(request.messages)
 

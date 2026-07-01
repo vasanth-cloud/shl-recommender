@@ -1,72 +1,73 @@
-from services.retriever import search_catalog
-from services.intent_router import conversation_text
+from services.intent_router import user_text
+from services.retriever import catalog, is_recommendable, search_catalog
 
 
-TECH_SKILLS = [
-    "java", "spring", "sql", "aws", "docker", "angular",
-    "python", "react", "linux", "networking", "excel", "word"
+DEFAULT_RECOMMENDATIONS = [
+    "Verify - G+",
+    "SHL Verify Interactive G+",
+    "Occupational Personality Questionnaire OPQ32r",
+    "Global Skills Assessment",
 ]
 
 
-def extract_skills(text: str):
-    text = text.lower()
-    return [skill for skill in TECH_SKILLS if skill in text]
-
-
-def item_matches_skill(item, skills):
-    searchable = (
-        item["name"] + " " +
-        item["description"] + " " +
-        " ".join(item["keys"])
-    ).lower()
-
-    for skill in skills:
-        if skill in searchable:
-            return True
-
-    return False
-
-
 def format_recommendations(items):
-    return [
-        {
+    formatted = []
+    seen_urls = set()
+
+    for item in items:
+        if item["url"] in seen_urls:
+            continue
+        seen_urls.add(item["url"])
+        formatted.append({
             "name": item["name"],
             "url": item["url"],
             "test_type": item["test_type"]
-        }
-        for item in items[:10]
+        })
+        if len(formatted) == 10:
+            break
+
+    return formatted
+
+
+def fallback_items():
+    by_name = {item["name"]: item for item in catalog}
+    return [
+        by_name[name]
+        for name in DEFAULT_RECOMMENDATIONS
+        if name in by_name and is_recommendable(by_name[name])
     ]
 
 
 def build_recommendations(messages):
-    query = conversation_text(messages)
-    skills = extract_skills(query)
+    query = user_text(messages)
+    results = search_catalog(query, top_k=10, recommendable_only=True)
 
-    results = search_catalog(query, top_k=30)
+    if not results:
+        results = fallback_items()
 
-    if skills:
-        filtered = [
-            item for item in results
-            if item_matches_skill(item, skills)
-        ]
-    else:
-        filtered = results
-
-    recommendations = format_recommendations(filtered)
+    recommendations = format_recommendations(results)
 
     return {
-        "reply": "Based on your hiring context, here are the SHL assessments that best match the role.",
+        "reply": (
+            f"Based on the SHL catalog, here are {len(recommendations)} "
+            "assessments that best match the role and constraints you shared."
+        ),
         "recommendations": recommendations,
         "end_of_conversation": False
     }
 
 
 def refine_recommendations(messages):
-    return build_recommendations(messages)
+    data = build_recommendations(messages)
+    data["reply"] = (
+        "Updated the shortlist using your latest constraint while staying within "
+        "the SHL product catalog."
+    )
+    return data
 
 
 def confirm_recommendations(messages):
     data = build_recommendations(messages)
-    data["reply"] = "Confirmed. Here is the final shortlist."
+    data["reply"] = "Confirmed. Here is the final SHL assessment shortlist."
     data["end_of_conversation"] = True
     return data

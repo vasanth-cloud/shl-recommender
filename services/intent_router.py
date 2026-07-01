@@ -1,20 +1,39 @@
 OFF_TOPIC_WORDS = [
-    "salary", "legal", "law", "visa", "resume", "interview tips",
-    "hiring advice", "job description write", "contract", "hipaa required"
+    "salary", "compensation", "legal", "law", "visa", "resume",
+    "interview tips", "hiring advice", "write a job description",
+    "contract", "hipaa", "prompt injection", "ignore previous",
+    "system prompt", "jailbreak"
 ]
 
 COMPARE_WORDS = [
-    "difference", "compare", "vs", "versus", "different from"
+    "difference", "compare", " vs ", "versus", "different from", "which is better"
 ]
 
 CONFIRM_WORDS = [
     "perfect", "thanks", "thank you", "confirmed", "that works",
-    "good", "that's good", "ok", "okay"
+    "looks good", "that's good", "ok", "okay"
 ]
 
 REFINE_WORDS = [
     "add", "remove", "drop", "replace", "actually", "include",
-    "exclude", "instead"
+    "exclude", "instead", "also", "more", "less", "change"
+]
+
+HIRING_KEYWORDS = [
+    "hire", "hiring", "assessment", "assessments", "test", "tests",
+    "candidate", "role", "developer", "engineer", "manager", "analyst",
+    "sales", "support", "service", "skills", "java", "spring", "sql",
+    "python", "frontend", "backend", "graduate", "senior", "mid-level",
+    "entry-level", "personality", "cognitive", "aptitude", "reasoning",
+    "opq", "gsa", "verify", "excel"
+]
+
+CONTEXT_KEYWORDS = [
+    "developer", "engineer", "manager", "analyst", "sales", "support",
+    "service", "java", "python", "sql", "excel", "frontend", "backend",
+    "spring", "react", "angular", "aws", "graduate", "entry", "senior",
+    "mid-level", "mid level", "stakeholder", "communication", "personality",
+    "cognitive", "aptitude", "reasoning", "leadership"
 ]
 
 
@@ -25,36 +44,29 @@ def latest_user_message(messages):
     return ""
 
 
+def user_text(messages):
+    return "\n".join(m.content for m in messages if m.role == "user")
+
+
 def conversation_text(messages):
     return "\n".join([f"{m.role}: {m.content}" for m in messages])
 
 
-def detect_intent(messages):
-    latest = latest_user_message(messages).lower()
+def has_prior_recommendation(messages):
+    return any(
+        m.role == "assistant"
+        and (
+            "shortlist" in m.content.lower()
+            or "recommend" in m.content.lower()
+            or "here are" in m.content.lower()
+            or "assessment" in m.content.lower()
+        )
+        for m in messages
+    )
 
-    hiring_keywords = [
-        "hire", "hiring", "assessment", "assessments", "test", "tests",
-        "candidate", "role", "developer", "engineer", "manager",
-        "sales", "skills", "java", "spring", "sql", "python",
-        "frontend", "backend", "graduate", "senior", "mid-level",
-        "entry-level"
-    ]
 
-    if not any(word in latest for word in hiring_keywords):
-        return "refuse"
-
-    if any(word in latest for word in OFF_TOPIC_WORDS):
-        return "refuse"
-
-    if any(word in latest for word in COMPARE_WORDS):
-        return "compare"
-
-    if any(word in latest for word in CONFIRM_WORDS):
-        return "confirm"
-
-    if any(word in latest for word in REFINE_WORDS):
-        return "refine"
-
+def is_vague(text):
+    lowered = text.lower().strip()
     vague_phrases = [
         "i need an assessment",
         "need assessment",
@@ -63,10 +75,36 @@ def detect_intent(messages):
         "need tests",
         "tests for hiring",
         "we need a solution",
-        "hiring someone"
+        "hiring someone",
+        "help me choose",
     ]
 
-    if len(latest.split()) <= 6 or any(v in latest for v in vague_phrases):
+    if any(v in lowered for v in vague_phrases) and not any(k in lowered for k in CONTEXT_KEYWORDS):
+        return True
+
+    return len(lowered.split()) <= 6 and not any(k in lowered for k in CONTEXT_KEYWORDS)
+
+
+def detect_intent(messages):
+    latest = latest_user_message(messages).lower()
+    all_user = user_text(messages).lower()
+
+    if any(word in latest for word in OFF_TOPIC_WORDS):
+        return "refuse"
+
+    if any(word in latest for word in COMPARE_WORDS):
+        return "compare"
+
+    if has_prior_recommendation(messages) and any(word in latest for word in CONFIRM_WORDS):
+        return "confirm"
+
+    if has_prior_recommendation(messages) and any(word in latest for word in REFINE_WORDS):
+        return "refine"
+
+    if not any(word in all_user for word in HIRING_KEYWORDS):
+        return "refuse"
+
+    if is_vague(all_user):
         return "clarify"
 
     return "recommend"

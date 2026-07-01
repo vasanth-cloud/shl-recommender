@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 
-CATALOG_PATH = Path("data/shl_catalog.json")
+CATALOG_PATH = Path(__file__).resolve().parents[1] / "data" / "shl_catalog.json"
 
 
 def load_catalog():
@@ -16,12 +16,13 @@ def load_catalog():
     for item in data:
         clean.append({
             "name": item.get("name", ""),
-            "url": item.get("link", item.get("url", "")),
-            "test_type": get_test_type(item.get("keys", [])),
+            "url": item.get("url") or item.get("link", ""),
+            "test_type": item.get("test_type") or get_test_type(item.get("keys", [])),
             "description": item.get("description", ""),
             "keys": item.get("keys", []),
             "job_levels": item.get("job_levels", []),
-            "duration": item.get("duration", ""),
+            "duration": item.get("duration_raw", item.get("duration", "")),
+            "duration_minutes": item.get("duration_minutes"),
             "languages": item.get("languages", [])
         })
 
