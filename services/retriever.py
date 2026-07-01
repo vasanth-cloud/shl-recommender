@@ -223,6 +223,16 @@ PRIORITY_ITEMS = {
         "Automata Data Science (New)",
         "Verify - Numerical Ability",
     ],
+    "java developer": [
+        "Core Java (Advanced Level) (New)",
+        "Java 8 (New)",
+        "SQL (New)",
+        "Automata - SQL (New)",
+        "Interpersonal Communications",
+        "Occupational Personality Questionnaire OPQ32r",
+        "Core Java (Entry Level) (New)",
+        "Java Frameworks (New)",
+    ],
     "data scientist": [
         "Data Science (New)",
         "Automata Data Science (New)",
