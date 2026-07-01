@@ -1,6 +1,6 @@
 import re
 
-from services.intent_router import user_text
+from services.intent_router import latest_user_message, user_text
 from services.llm_ranker import rerank_with_llm
 from services.retriever import catalog, is_recommendable, search_catalog
 
@@ -22,6 +22,16 @@ DEFAULT_RECOMMENDATIONS = [
     "SHL Verify Interactive G+",
     "Occupational Personality Questionnaire OPQ32r",
     "Global Skills Assessment",
+]
+
+FRESH_QUERY_MARKERS = [
+    "hire", "hiring", "need assessment", "need tests", "looking for",
+    "recruiting", "candidate for", "role for", "job description"
+]
+
+REFINEMENT_MARKERS = [
+    "actually", "also", "add", "remove", "include", "exclude",
+    "instead", "change", "make it", "what about"
 ]
 
 
@@ -136,8 +146,21 @@ def fallback_items():
     ]
 
 
+def recommendation_query(messages):
+    latest = latest_user_message(messages).strip()
+    lowered = latest.lower()
+
+    if (
+        any(marker in lowered for marker in FRESH_QUERY_MARKERS)
+        and not any(marker in lowered for marker in REFINEMENT_MARKERS)
+    ):
+        return latest
+
+    return user_text(messages)
+
+
 def build_recommendations(messages):
-    query = user_text(messages)
+    query = recommendation_query(messages)
     results = search_catalog(query, top_k=50, recommendable_only=True)
     results = apply_hard_constraints(query, results)
 
